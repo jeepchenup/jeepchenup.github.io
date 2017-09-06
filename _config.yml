@@ -1,0 +1,11 @@
+title: ABei Bolg
+email: jeepchenup@foxmail.com
+description: one life, one code.
+baseurl: "" 
+url: "" 
+RSS: false
+github_username:  jeepchenup
+
+# Build settings
+markdown: kramdown
+port: 3000
