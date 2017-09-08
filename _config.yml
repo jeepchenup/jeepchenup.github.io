@@ -1,8 +1,9 @@
+#Site settings
 title: ABei Bolg
 email: jeepchenup@foxmail.com
 description: one life, one code.
 baseurl: "" 
-url: "" 
+header-img: img/home-bg.jpg
 RSS: false
 github_username:  jeepchenup
 
