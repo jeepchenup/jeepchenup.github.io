@@ -4,13 +4,21 @@ email: jeepchenup@foxmail.com
 description: one life, one code.
 baseurl: "" 
 header-img: img/home-bg.jpg
-RSS: false
-github_username:  jeepchenup
+
 
 # Build settings
 markdown: kramdown
 port: 3000
 
+#Sitebar settings
+sitebar: true                      #whether or not using Sitebar.
+
+#SNS settings
+RSS: true
+github_username:  jeepchenup
+linkedin_username: abeidragon
+
+
 # Featured Tags
-featured-tags: true               # whether or not using Feature-Tags
-featured-condition-size: 1         # A tag will be featured if the size of it is more than this condition value
+featured-tags: true                # whether or not using Feature-Tags.
+featured-condition-size: 1         # 标签的长度大于[featured-condition-size]所指定的长度时候成为标签.
