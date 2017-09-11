@@ -7,12 +7,6 @@
 [Jekyll](http://www.jekyllrb.com) | 
 [Liquid](https://help.shopify.com/themes/liquid)
 
-## 使用手册
-
-* 开始
-    * [环境要求](#environment)
-
-
 ## 致谢
 
 1. 模板作者[Huxpro](http://github.com/Huxpro)
