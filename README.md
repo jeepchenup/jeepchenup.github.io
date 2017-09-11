@@ -3,7 +3,8 @@
 ### [我的博客在这里 &rarr;](http://jeepchenup.github.io)
 
 ## 参考网站
-[Jekyll](http://www.jekyll.com)
+
+[Jekyll](http://www.jekyllrb.com) | 
 [Liquid](https://help.shopify.com/themes/liquid)
 
 ## 使用手册
