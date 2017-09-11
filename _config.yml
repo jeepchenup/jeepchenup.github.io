@@ -9,6 +9,7 @@ header-img: img/home-bg.jpg
 # Build settings
 markdown: kramdown
 port: 3000
+paginate: 10
 
 #Sitebar settings
 sitebar: true                      #whether or not using Sitebar.
@@ -22,3 +23,8 @@ linkedin_username: abeidragon
 # Featured Tags
 featured-tags: true                # whether or not using Feature-Tags.
 featured-condition-size: 1         # 标签的长度大于[featured-condition-size]所指定的长度时候成为标签.
+
+# Gems
+# from PR#40, to support local preview for Jekyll 3.0
+# use>
+gems: [jekyll-paginate]
