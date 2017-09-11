@@ -1,5 +1,6 @@
 #Site settings
 title: ABei Bolg
+SEOTitle: 阿贝的博客 | ABei Blog
 email: jeepchenup@foxmail.com
 description: keep living, keep coding.
 baseurl: "" 
@@ -26,5 +27,6 @@ featured-condition-size: 1         # 标签的长度大于[featured-condition-si
 
 # Gems
 # from PR#40, to support local preview for Jekyll 3.0
-# use>
-gems: [jekyll-paginate]
+# please use-> "bundle install"
+
+plugins: [jekyll-paginate]
