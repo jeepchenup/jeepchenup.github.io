@@ -14,6 +14,7 @@ paginate: 10
 
 #Sitebar settings
 sitebar: true                      #whether or not using Sitebar.
+sidebar-about-description: ”改变，我能改变的；适应，我不能改变的。“
 
 #SNS settings
 RSS: false
