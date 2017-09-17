@@ -9,12 +9,12 @@ header-img: img/home-bg.jpg
 
 # Build settings
 markdown: kramdown
-# port: 3000                       #for debug page
+# port: 4000                       #for debug page
 paginate: 10
 
 #Sitebar settings
 sitebar: true                      #whether or not using Sitebar.
-sidebar-about-description: ”改变，我能改变的；适应，我不能改变的。“
+sidebar-about-description: ”改变，我能改变的。<br/>适应，我不能改变的。“
 sidebar-avatar: /img/avatar-abei.jpg
 
 #SNS settings
@@ -25,7 +25,7 @@ linkedin_username: abeidragon
 
 # Featured Tags
 featured-tags: true                # whether or not using Feature-Tags.
-featured-condition-size: 1         # 标签的长度大于[featured-condition-size]所指定的长度时候成为标签.
+featured-condition-size: 0         # 标签的长度大于[featured-condition-size]所指定的长度时候成为标签.
 
 # Gems
 # from PR#40, to support local preview for Jekyll 3.0
