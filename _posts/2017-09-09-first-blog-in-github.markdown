@@ -2,7 +2,7 @@
 layout: post
 title:  "Hello Github!"
 subtitle: "Hello Jekyll!"
-date:   2017-09-06 13:44:11
+date:   2017-09-06
 author: "Steven"
 catalog: true
 tags: 
