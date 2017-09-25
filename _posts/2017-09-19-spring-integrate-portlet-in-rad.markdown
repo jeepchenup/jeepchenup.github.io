@@ -10,10 +10,10 @@ tags:
     - SpringMVC
 ---
 
-> Spring integrate portlet in RAD9.0<br/>
+> Spring3.0 integrate portlet in RAD9.0<br/>
 > [Referenced document](https://docs.spring.io/spring/docs/current/spring-framework-reference/html/portlet.html)
 
-- 预计阅读时间: 5分钟
+- 预计阅读时间: 15分钟
 
 ## 内容简介
 
@@ -25,6 +25,13 @@ tags:
 * 配置
     - [web.xml](#webXML)
     - [portlet.xml](#portletXML)
+* 源码
+    - [点击我](https://jeepchenup.github.com/jeepchenup.github.io)
+
+## 目录结构
+
+先看一下整个项目的结构，注意在创建 *Protlet* 项目的同时也创建相应的 *EAR* 项目：
+![SpringIntegratePortletProject](/img/in-post/spring-integrate-portlet/project-struc.png)
 
 ### Portlet
 
@@ -33,21 +40,17 @@ tags:
 ```java
 @Controller
 @RequestMapping("VIEW")
-public Class CusNameDisplayPortalViewController {
-
-    @RequestMapping
-    public String handleRenderRequestInternal(RenderRequest request) throws Exception {
-        String str = "Hello Portlet";
-        request.setAttribute("hello", str);
-        return "display";
-    }
+public class FirstSpringPortlet {
+	
+	@RequestMapping
+	public String showIndex(RenderRequest request) {
+		request.setAttribute("name", "Steven");
+		return "index";
+	}
 }
 ```
 
 ### Properties
-
-模板生成nl包需要移动到`resources`目录下面
-![nl包路径](/img/in-post/spring-integrate-portlet/path-struc.png)
 
 `CusNameDisplayPortalViewController.properties`<br>
 &darr;&darr;
@@ -61,4 +64,4 @@ javax.portlet.keywords=CusNameDisplayPortalViewController
 ### ApplicationContextXML
 
 文件放置位置：`WEB-INF`<br>
-这里我在该目录下面创建了一个`context`的子目录。
+这里我在该目录下面创建了一个`context`的子目录。注意 *ApplicationContext.xml* 文件路径。
