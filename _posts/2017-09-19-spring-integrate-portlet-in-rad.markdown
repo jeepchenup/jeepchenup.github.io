@@ -20,13 +20,14 @@ tags:
 * 创建
     - [portlet](#portlet)
     - [portlet配置文件](#properties)
-    - [portletname-portlet.xml](#portletName)
-    - [applicationContext.xml](#appContext)
+    - [portletname-portlet.xml](#portlet-name-xml "portletname-portlet.xml")
+    - [applicationContext.xml](#application-context-xml "applicationContext.xml")
 * 配置
-    - [web.xml](#web)
-    - [portlet.xml](#portlet)
+    - [web.xml](#web-xml "web.xml")
+    - [portlet.xml](#portlet-xml "protlet.xml")
+* [总结](#总结 "summary")
 * 源码
-    - [点击下载](https://github.com/jeepchenup/jeepchenup.github.io/blob/master/_sources/2017.09.19/integrateSpring.7z)
+    - [点击下载](https://github.com/jeepchenup/jeepchenup.github.io/blob/master/_sources/2017.09.19/integrateSpring.7z "快点我呀")
 
 ### 目录结构
 
@@ -35,7 +36,7 @@ tags:
 
 #### Portlet
 
-*Portlet* 可以手动创建 *Portlet* 类也可以用 *RAD* 模板创建，这里我选择模板创建。模板创建有个好处就是可以不需要手动创建 *nl* 包。
+*Portlet* 可以手动创建 *Portlet* 类也可以用 *RAD* 模板创建，这里我选择模板创建。模板创建有个好处就是可以不需要手动创建 *nl* 包并且自动生成 *portlet.xml* 文件。
 代码如下：
 ```java
 @Controller
@@ -52,15 +53,15 @@ public class FirstSpringPortlet {
 
 #### Properties
 
-`CusNameDisplayPortalViewController.properties`&rarr;
+`FirstSpringPortlet.properties`&rarr;
 
 ```xml
-javax.portlet.title=CusNameDisplayPortalViewController
-javax.portlet.short-title=CusNameDisplayPortalViewController
-javax.portlet.keywords=CusNameDisplayPortalViewController
+javax.portlet.title=FirstSpringPortlet
+javax.portlet.short-title=FirstSpringPortlet
+javax.portlet.keywords=FirstSpringPortlet
 ```
 
-#### AppContext
+#### Application Context XML
 
 文件放置位置：`WEB-INF`<br>
 这里我在该目录下面创建了一个`context`的子目录（**注意 *applicationContext.xml* 文件路径**）
@@ -92,7 +93,7 @@ javax.portlet.keywords=CusNameDisplayPortalViewController
 </bean>
 ```
 
-#### Web
+#### Web XML
 
 对于`web.xml`主要是对配置上面创建的`application.xml`进行路径设置，以及配置 *Spring* 的监听器。
 
@@ -101,4 +102,51 @@ javax.portlet.keywords=CusNameDisplayPortalViewController
     <param-name>contextConfigLocation</param-name>
     <param-value>/WEB-INF/context/applicationContext.xml</param-value>
 </context-param>
+
+<listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+</listener>
+```
+
+#### Portlet XML
+
+*Portlet XML* 在创建 *Portlet* 类的时候就自动生成了，但是与 *Spring MVC* 的整合，需要将`<portlet-class>`引用的类改成 `org.springframework.web.portlet.DispatcherPortlet`
+
+```xml
+<portlet>
+    <portlet-name>FirstSpringPortlet</portlet-name>
+    <display-name>FirstSpringPortlet</display-name>
+    <display-name xml:lang="en">FirstSpringPortlet</display-name>
+    <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+    <init-param>
+        <name>wps.markup</name>
+        <value>html</value>
+    </init-param>
+    <expiration-cache>0</expiration-cache>
+    <supports>
+        <mime-type>text/html</mime-type>
+        <portlet-mode>view</portlet-mode>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <resource-bundle>com.controllers.nl.FirstSpringPortletResource</resource-bundle>
+    <portlet-info>
+        <title>FirstSpringPortlet</title>
+        <short-title>FirstSpringPortlet</short-title>
+        <keywords>FirstSpringPortlet</keywords>
+    </portlet-info>
+</portlet>
+```
+
+#### Portlet Name XML
+
+创建相应的 *Portlet XML* 文件。这里的 *Portlet* 实则是 *Spring* 中的 *Controller*， `FirstSpringPortlet.class`并没有继承`javax.portlet.GenericPortlet`这个类。显然在部署阶段，项目是找不到`portlet.xml`中所指定portlet。*Spring* 给我们的解决方案就是，创建一个 *xml* 文件，文件命名规则有规定(**portletName-portlet.xml**)。*portletname* 就是`portlet.xml`中`<portlet-name>`中所设置的名称。`FirstSpringPortlet-portlet.xml`核心代码如下：
+
+```xml
+<context:annotation-config/>
+
+<!-- Controllers -->
+<context:component-scan base-package="com.controllers" />
+
+<!-- Handler Mappings -->
+<bean class="org.springframework.web.portlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
 ```
