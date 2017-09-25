@@ -19,6 +19,7 @@ tags:
 
 * 创建
     - [portlet](#portlet)
+    - [portlet配置文件](#properties)
     - [portletname-portlet.xml](#portletXML)
     - [applicationContext.xml](#applicationContextXML)
 * 配置
@@ -43,12 +44,21 @@ public Class CusNameDisplayPortalViewController {
 }
 ```
 
+### Properties
+
 模板生成nl包需要移动到`resources`目录下面
 ![nl包路径](/img/in-post/spring-integrate-portlet/path-struc.png)
-`CusNameDisplayPortalViewController.properties`内容如下
+
+`CusNameDisplayPortalViewController.properties`<br>
+&darr;&darr;
 
 ```xml
 javax.portlet.title=CusNameDisplayPortalViewController
 javax.portlet.short-title=CusNameDisplayPortalViewController
 javax.portlet.keywords=CusNameDisplayPortalViewController
 ```
+
+### ApplicationContextXML
+
+文件放置位置：`WEB-INF`<br>
+这里我在该目录下面创建了一个`context`的子目录。
