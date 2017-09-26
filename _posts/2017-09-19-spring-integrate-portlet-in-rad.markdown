@@ -110,6 +110,8 @@ javax.portlet.keywords=FirstSpringPortlet
 
 #### Portlet XML
 
+*Portlet MVC* 是一个请求驱动的web *MVC* 框架，它围绕着一个 *Portlet* 进行设计。*Portlet* 将请求发送到 *Controller*，并提供其他功能，以促进 *Portlet* 的应用程序开发。然而，*Spring* 的 *DispatcherPortlet* 除了上面讲到的功能之外，它还与 *Spring Application Context* 完全集成，允许你使用 *Spring* 的其他特性。
+
 *Portlet XML* 在创建 *Portlet* 类的时候就自动生成了，但是与 *Spring MVC* 的整合，需要将`<portlet-class>`引用的类改成 `org.springframework.web.portlet.DispatcherPortlet`
 
 ```xml
@@ -139,7 +141,7 @@ javax.portlet.keywords=FirstSpringPortlet
 
 #### Portlet Name XML
 
-创建相应的 *Portlet XML* 文件。这里的 *Portlet* 实则是 *Spring* 中的 *Controller*， `FirstSpringPortlet.class`并没有继承`javax.portlet.GenericPortlet`这个类。显然在部署阶段，项目是找不到`portlet.xml`中所指定portlet。*Spring* 给我们的解决方案就是，创建一个 *xml* 文件，文件命名规则有规定(**portletName-portlet.xml**)。*portletname* 就是`portlet.xml`中`<portlet-name>`中所设置的名称。`FirstSpringPortlet-portlet.xml`核心代码如下：
+创建相应的 *Portlet XML* 文件。这里的 *Portlet* 实则是 *Spring* 中的 *Controller*，`FirstSpringPortlet.class`并没有继承`javax.portlet.GenericPortlet`这个类。显然在部署阶段，项目是找不到`portlet.xml`中所指定portlet。*Spring* 给我们的解决方案就是，创建一个 *xml* 文件，文件命名规则有规定(**portletName-portlet.xml**)。*portletname* 就是`portlet.xml`中`<portlet-name>`中所设置的名称。`FirstSpringPortlet-portlet.xml`的关键配置如下：
 
 ```xml
 <context:annotation-config/>
@@ -150,3 +152,5 @@ javax.portlet.keywords=FirstSpringPortlet
 <!-- Handler Mappings -->
 <bean class="org.springframework.web.portlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
 ```
+
+#### 总结
