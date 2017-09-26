@@ -27,7 +27,7 @@ tags:
     - [portlet.xml](#portlet-xml "protlet.xml")
 * [总结](#总结 "summary")
 * 源码
-    - [点击下载](https://github.com/jeepchenup/jeepchenup.github.io/blob/master/_sources/2017.09.19/integrateSpring.7z "快点我呀")
+    - [实例代码](https://github.com/jeepchenup/jeepchenup.github.io/blob/master/_sources/2017.09.19/integrateSpring.7z "快点我呀")
 
 ### 目录结构
 
@@ -161,3 +161,5 @@ javax.portlet.keywords=FirstSpringPortlet
 ```
 
 #### 总结
+
+！[总结](/img/in-post/spring-integrate-portlet/2017-09-19-Sammery.png)
