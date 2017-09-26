@@ -110,12 +110,6 @@ javax.portlet.keywords=FirstSpringPortlet
 
 #### Portlet XML
 
-*Portlet MVC* 是一个请求驱动的web *MVC* 框架，它围绕着一个 *Portlet* 进行设计。*Portlet* 将请求发送到 *Controller*，并提供其他功能，以促进 *Portlet* 的应用程序开发。然而，*Spring* 的 *DispatcherPortlet* 除了实现上面讲到的功能之外，它还与 *Spring Application Context* 完全集成，允许你使用 *Spring* 的其他特性。
-
-在 *Portlet MVC* 框架中，每个 *DispatcherPortlet* 都有自己的 *WebApplicationContext*，它继承了根 *WebApplicationContext* 中已经定义的所有bean。这些继承的 *beans* 可以在 *Portlet* 特定的范围内被重写，对于`new scope-specific` *beans*, 它们可以被定义到一个本地的 *Portlet* 实例。
-
-在初始化 *DispatcherPortlet* 时，*Spring* 框架将在你的 *web application* 的`WEB-INF`目录下寻找一个命名为`[portlet-name]-portlet.xml`文件。然后根据这个xml文件，创建相应的 *bean* 实例。
-
 *Portlet XML* 在创建 *Portlet* 类的时候就自动生成了，但是与 *Spring MVC* 的整合，需要将`<portlet-class>`引用的类改成 `org.springframework.web.portlet.DispatcherPortlet`
 
 ```xml
@@ -145,7 +139,16 @@ javax.portlet.keywords=FirstSpringPortlet
 
 #### Portlet Name XML
 
-创建相应的 *Portlet XML* 文件。这里的 *Portlet* 实则是 *Spring* 中的 *Controller*，`FirstSpringPortlet.class`并没有继承`javax.portlet.GenericPortlet`这个类。显然在部署阶段，项目是找不到`portlet.xml`中所指定portlet。*Spring* 给我们的解决方案就是，创建一个 *xml* 文件，文件命名规则有规定(**portletName-portlet.xml**)。*portletname* 就是`portlet.xml`中`<portlet-name>`中所设置的名称。`FirstSpringPortlet-portlet.xml`的关键配置如下：
+*Portlet MVC* 是一个请求驱动的web *MVC* 框架，它围绕着一个 *Portlet* 进行设计。*Portlet* 将请求发送到 *Controller*，并提供其他功能，以促进 *Portlet* 的应用程序开发。然而，*Spring* 的 *DispatcherPortlet* 除了实现上面讲到的功能之外，它还与 *Spring Application Context* 完全集成，允许你使用 *Spring* 的其他特性。
+
+在 *Portlet MVC* 框架中，每个 *DispatcherPortlet* 都有自己的 *WebApplicationContext*，它继承了根 *WebApplicationContext* 中已经定义的所有bean。这些继承的 *beans* 可以在 *Portlet* 特定的范围内被重写，对于`new scope-specific` *beans*, 它们可以被定义到一个本地的 *Portlet* 实例。
+
+在初始化 *DispatcherPortlet* 时，*Spring* 框架将在你的 *web application* 的`WEB-INF`目录下寻找一个命名为`[portlet-name]-portlet.xml`文件。然后根据这个xml文件，创建相应的 *bean* 实例。在 *Spring* 的官方文档里面写到，
+> overriding the definitions of any beans defined with the same name in the global scope.
+
+个人理解为，如果`WEB-INF`下面存在`[portlet-name]-portlet.xml`，*Spring MVC* 就不会去查找`root applicationContext`来创建bean实例。所以可以在全局范围内，重写任意定义过相同名字（与父类名称相同）的 *beans*。
+
+创建相应的 *Portlet XML* 文件。这里的 *Portlet* 实则是 *Spring* 中的 *Controller*，`FirstSpringPortlet.class`并没有继承`javax.portlet.GenericPortlet`这个类。显然在部署阶段，项目是找不到`portlet.xml`中所指定portlet。*Spring* 给我们的解决方案就是，创建一个 *xml* 文件，文件命名规则有规定(**[portlet-name]-portlet.xml**)。*portletname* 就是`portlet.xml`中`<portlet-name>`中所设置的名称。`FirstSpringPortlet-portlet.xml`的关键配置如下：
 
 ```xml
 <context:annotation-config/>
