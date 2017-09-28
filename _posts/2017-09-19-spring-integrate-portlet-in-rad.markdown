@@ -163,4 +163,4 @@ javax.portlet.keywords=FirstSpringPortlet
 
 #### 总结
 
-！[总结](/img/in-post/spring-integrate-portlet/2017-09-19-Sammery.png)
+![总结](/img/in-post/spring-integrate-portlet/2017-09-19-Sammery.png)
