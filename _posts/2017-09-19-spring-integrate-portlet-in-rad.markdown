@@ -161,6 +161,6 @@ javax.portlet.keywords=FirstSpringPortlet
 <bean class="org.springframework.web.portlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
 ```
 
-#### 总结
+### 总结
 
 ![总结](/img/in-post/spring-integrate-portlet/2017-09-19-Sammery.png)
