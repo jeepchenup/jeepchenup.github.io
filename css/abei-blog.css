@@ -1262,27 +1262,27 @@ img::-moz-selection {
 .heart {
   background-color: red;
   display: inline-block;
-  height: 30px;
-  margin: 0 10px;
+  height: 5px;
+  width: 5px;
+  margin: 1px 2px;
   position: relative;
   top: 0;
   transform: rotate(-45deg);
-  width: 30px;
 }
 .heart:before,
 .heart:after {
   content: "";
   background-color: red;
   border-radius: 50%;
-  height: 30px;
+  height: 5px;
   position: absolute;
-  width: 30px;
+  width: 5px;
 }
 .heart:before {
-  top: -15px;
+  top: -4px;
   left: 0;
 }
 .heart:after {
-  left: 15px;
+  left: 4px;
   top: 0;
 }
