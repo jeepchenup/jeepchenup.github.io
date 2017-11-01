@@ -14,7 +14,7 @@ paginate: 10
 
 #Sitebar settings
 sitebar: true                      #whether or not using Sitebar.
-sidebar-about-description: 改变，我能改变的。<br/>适应，我不能改变的。
+sidebar-about-description: 业精于勤荒于嬉，<br/>行成于思毁于随。
 sidebar-avatar: /img/avatar-abei.jpg
 
 #SNS settings
