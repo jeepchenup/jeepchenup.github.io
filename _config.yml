@@ -9,7 +9,7 @@ header-img: img/home-bg.jpg
 
 # Build settings
 markdown: kramdown
-# port: 4000                       #for debug page
+port: 3000                       #for debug page
 paginate: 10
 
 #Sitebar settings

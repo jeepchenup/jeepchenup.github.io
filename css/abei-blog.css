@@ -1259,3 +1259,30 @@ img::-moz-selection {
 .page-fullscreen footer .copyright a:hover {
   color: #ddd;
 }
+.heart {
+  background-color: red;
+  display: inline-block;
+  height: 30px;
+  margin: 0 10px;
+  position: relative;
+  top: 0;
+  transform: rotate(-45deg);
+  width: 30px;
+}
+.heart:before,
+.heart:after {
+  content: "";
+  background-color: red;
+  border-radius: 50%;
+  height: 30px;
+  position: absolute;
+  width: 30px;
+}
+.heart:before {
+  top: -15px;
+  left: 0;
+}
+.heart:after {
+  left: 15px;
+  top: 0;
+}
