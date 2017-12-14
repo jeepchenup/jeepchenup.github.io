@@ -2,12 +2,12 @@
 layout: post
 title:  "工作总结(1)"
 subtitle: ""
-date:  2017-09-19
+date:  2017-11-27
 author: "Steven"
 catalog: true
 tags: 
     - JavaScript
-    - Summary
+    - Work
 ---
 
 > 上个星期task完成的差不多的前提下，我让老司机帮我review code。结果还是有很多细节上的问题，感觉还是有很多地方需要改进。
