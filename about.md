@@ -1,7 +1,7 @@
 ---
 layout: page
-title: About
+title: about
 permalink: /about/
 ---
 
-生活，工作，还有家人。
+我叫陈培成，现在是一个全栈开发。
