@@ -78,3 +78,24 @@ function actualParameter(x) {
 ```javascript
 (function(){/* 业务逻辑 */}()); //这样的匿名函数不会污染全局
 ```
+
+#### 闭包(closure)
+
+> 闭包，函数对象可以通过作用域链相互关联起来，函数体内的变量都可以保存在函数作用域内。
+
+从上面的概念可知，闭包是和函数对象的作用域相关的，这也是闭包的核心。光看概念非常抽象，我所理解的闭包就是**能够读取其他函数内部变量的函数**。
+
+要理解闭包之前，必须得理解变量作用域。变量的作用域无非就2种：全局变量和局部变量。
+
+JavaScript语言的特殊之处，就在于函数内部可以直接读取全局变量。
+```javascript
+var scope = "global scope";
+
+function checkscope() {
+    console.log(scope);
+}
+
+checkscope(); // global scope
+```
+
+反过来，
