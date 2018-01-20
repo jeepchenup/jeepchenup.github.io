@@ -131,7 +131,7 @@ readLocal(); // local
 - 就是前面讲到的，将函数内部和函数外部连接起来。
 - 让函数内部的变量始终保持在内存中。
 
-如何来理解闭包的第二个作用？
+如何来理解闭包的第二个作用，请看下面的代码：
 
 ```javascript
 function checkNum() {
@@ -146,6 +146,8 @@ function checkNum() {
 
 var readNum = checkNum();
 
-readNum();
-readNum();
+readNum(); // 0
+readNum(); // 1
 ```
+
+从上面的代码运行的结果可知，checkNum函数中的num变量，在运行之后，并没有被垃圾回收机制回收。为什么会出现这个现象呢？仔细看看上面的代码，checkNum是checkLocal的父函数，接下来checkLocal被赋给了一个全局变量，这导致checkLocal始终存在于内存中，而checkLocal中的变量依赖于父函数checkNum，所以父函数checkNum也始终存在于内存中。
