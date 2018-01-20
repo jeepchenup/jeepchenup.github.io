@@ -98,4 +98,54 @@ function checkscope() {
 checkscope(); // global scope
 ```
 
-反过来，
+反过来，在函数外部自然无法读取函数内部的局部变量。
+
+```javascript
+function checkscope() {
+    var scope = "local";
+}
+
+console.log(scope); //undefined
+```
+
+但是外部函数真的不能访问函数内部的局部变量吗？其实是可以的，这也就是闭包的作用。
+
+```javascript
+function checkscope() {
+    var scope = "local";
+
+    function checkLocal() {
+        console.log(scope);
+    }
+
+    return checkLocal;  //将checkLocal作为返回值
+}
+
+var readLocal = checkscope();
+readLocal(); // local
+```
+
+本来内部的局部变量对于外部来说是隐藏的。上面的代码，实现了外部读取函数内部的局部变量。checkscope这个函数就是**闭包**。在本质上，闭包就是将函数内部和函数外部连接起来的桥梁。
+
+闭包最大的作用有两个：
+- 就是前面讲到的，将函数内部和函数外部连接起来。
+- 让函数内部的变量始终保持在内存中。
+
+如何来理解闭包的第二个作用？
+
+```javascript
+function checkNum() {
+    var num = 0;
+
+    function checkLocal() {
+        console.log(num++);
+    }
+
+    return checkLocal;  
+}
+
+var readNum = checkNum();
+
+readNum();
+readNum();
+```
