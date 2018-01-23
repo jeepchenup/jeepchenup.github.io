@@ -35,3 +35,23 @@ sum(1+2);   // throw error info
 sum(1+2+3); // return 6
 ```
 
+#### call()方法
+
+call的原理：
+```javascript
+var o = {};
+
+function f() {
+    console.log("call f function");
+}
+
+f.call(o); // 输出'call f function'
+o // {};
+
+/*下面的操作就相当于f.call(o)*/
+
+o.temporaryAttribute = f;
+o.temporaryAttribute();
+delete o.temporaryAttribute;
+
+```
