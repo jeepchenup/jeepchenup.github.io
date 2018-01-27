@@ -8,6 +8,6 @@ permalink: /linkToMasters/
 
 - [阮一峰](http://www.ruanyifeng.com/home.html)
 
-#### 论坛
+#### 学习
 
 - [MDN](https://developer.mozilla.org/zh-CN/)
