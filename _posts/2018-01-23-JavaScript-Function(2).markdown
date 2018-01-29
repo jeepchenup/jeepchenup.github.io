@@ -68,6 +68,20 @@ o.temporaryAttribute = f;
 o.temporaryAttribute();
 delete o.temporaryAttribute;
 
+
+window.number = 'one';
+document.number = 'two';
+
+var s1 = { number : 'three'};
+function changeColor() {
+    console.log(this.number);
+}
+
+changeColor().apply();          //one  
+changeColor().apply(window);    //one
+changeColor().apply(document);  //two
+changeColor().apply(this);      //one  
+changeColor().apply(s1);        //three
 ```
 
 apply在功能上和call是类似的，但是传入实参的形式和call有所不同，第一个传入的都是当前要执行该方法的对象，后面是传入方法的实参，但是我们可以看到，apply的方式是数组(可以是真的数组，也可以是类数组)，这点与call方法是不一样的。
