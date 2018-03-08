@@ -12,7 +12,6 @@ Hi all~<br>
 梦想：有家自己的火锅店。因为老雷喜欢吃火锅<br>
 
 * * *
-- 喜欢的句子
-    - Code change the world and change the way of life.
-    - 观念是束缚你的牢笼，一个囚徒怎么会开心呢？
-    - 居安思危
+- Code change the world and change the way of life.
+- 观念是束缚你的牢笼，一个囚徒怎么会开心呢？
+- 居安思危
