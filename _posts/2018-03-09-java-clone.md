@@ -305,7 +305,120 @@ public class Test {
 
 #### Serializable
 
-在上面的例子里面，其实已经都模拟了浅克隆和深克隆了。
+在上面的例子里面，其实已经都模拟了浅克隆和深克隆了。但是，让我们来思考一个问题。如果一个对象有很多类似`Address`这样的内部引用或者有多层的引用存在，如果还使用clone()方法，那么，会显得代码很冗杂并且灵活性不好。
+
+面对这种情况的时候，我们应该考虑让被复制类实现`Serializable`接口。通过序列化和反序列化能够实现多层的复制。下面来看Worm(蠕虫)程序：
+
+```java
+class Data implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
+	private int n;
+
+	public Data(int n) {
+		this.n = n;
+	}
+
+	@Override
+	public String toString() {
+		return "Data [n=" + n + "]";
+	}
+	
+}
+
+public class Worm implements Serializable{
+
+	private static final long serialVersionUID = 1L;
+
+	private static Random random = new Random(47);
+	
+	private Data[] datas = {
+			new Data(random.nextInt(10)),
+			new Data(random.nextInt(10)),
+			new Data(random.nextInt(10))
+	};
+	
+	private Worm next;
+	
+	private char c;
+	
+	private int id;
+	
+	//Value of i == number of segments
+	public Worm(int i, char x) {
+		this.id = i;
+		System.out.println("Worm constructor: " + i);
+		c = x;
+		if(--i > 0)
+			next = new Worm(i, (char)(x+1));
+	}
+	
+	public Worm() {
+		System.out.println("Default constructor");
+	}
+
+	public int getId() {
+        return this.id;
+    }
+
+    public void set(int id) {
+        this.id = id;
+    }
+	
+	@Override
+	public String toString() {
+		StringBuffer result = new StringBuffer(":");
+		result.append(c).append("( id = ").append(id).append(",");
+		for(Data data: datas)
+			result.append(data);
+		result.append(")");
+		if(next != null)
+			result.append(next);
+		return result.toString();
+	}
+	
+	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException {
+		Worm w = new Worm(6,'a');
+		System.out.println("w = " + w);
+		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("worm.out"));
+		out.writeObject("Worm storage\n");
+		out.writeObject(w);
+		out.flush();
+		out.close();
+		
+		ObjectInputStream in = new ObjectInputStream(new FileInputStream("worm.out"));
+		String s = (String) in.readObject();
+		Worm w2 = (Worm)in.readObject();
+		System.out.println(s + " w2 = " + w2);
+		
+		//通过字节流传输
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		
+		ObjectOutputStream out2 = new ObjectOutputStream(bout);
+		out2.writeObject("Worm storage\n");
+		out2.writeObject(w);
+		out2.flush();
+		
+		ObjectInputStream in2 = new ObjectInputStream(new ByteArrayInputStream(bout.toByteArray()));
+		s = (String) in2.readObject();
+		Worm w3 = (Worm) in2.readObject();
+		System.out.println(s + " w3  = " + w3);
+		
+        //test
+		w.set(3);
+		System.out.println("w = " + w);
+		System.out.println("w2 = " + w2);
+		System.out.println("w3 = " + w3 );
+	}
+}
+```
+
+注意，对于内层引用要想实现复制，必须也要实现`Serializable`接口。
+
+#### 总结
+实现对象克隆有两种方式：
+1. 实现`Cloneable`接口，重写clone()方法。
+2. 实现`Serializable`接口，通过对象的序列化和反序列化实现克隆(深度克隆)。
 
 #### Ref
 [参考地址](http://blog.csdn.net/tounaobun/article/details/8491392)<br>
