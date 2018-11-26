@@ -1,34 +1,57 @@
-#Site settings
-title: ABei Blog
-SEOTitle: 阿贝的博客 | ABei Blog
-email: jeepchenup@foxmail.com
-description: keep living, keep coding.
-baseurl: "" 
-header-img: img/home-bg.jpg
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely need to edit after that.
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'jekyll serve'. If you change this file, please restart the server process.
 
+# Site settings
+title: ABei
+brief-intro: A Java Engineer
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "https://jeepchenup.github.io" # the base hostname & protocol for your site
+
+permalink: /:year/:month/:day/:title/
+
+# other links
+# twitter_username: 
+# facebook_username: 
+github_username:  jeepchenup
+email: jeepchenup@foxmail.com
+# weibo_username: 
+# zhihu_username: 
+# linkedIn_username: 
+# dribbble_username:
+
+# description_footer: 
+
+# comments
+disqus_shortname: jeepchenup
+
+# statistic analysis 统计代码
+# 百度统计 id，将统计代码替换为自己的百度统计id，即
+# hm.src = "//hm.baidu.com/hm.js?xxxxxxxxxxxx";
+# xxxxx字符串
+baidu_tongji_id: cf8506e0ef223e57ff6239944e5d46a4
+google_analytics_id: UA-72449510-4 # google 分析追踪id
 
 # Build settings
 markdown: kramdown
-port: 3000                       #for debug page
-paginate: 10
 
-#Sitebar settings
-sitebar: true                      #whether or not using Sitebar.
-sidebar-about-description: 业精于勤荒于嬉，<br/>行成于思毁于随。
-sidebar-avatar: /img/avatar-abei.jpg
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
 
-#SNS settings
-RSS: false
-github_username:  jeepchenup
-linkedin_username: abeidragon
+# port
+# port: 1234
 
+# url
+category_dir: category/
+tag_dir: tag/
 
-# Featured Tags
-featured-tags: true                # whether or not using Feature-Tags.
-featured-condition-size: 0         # 标签的长度大于[featured-condition-size]所指定的长度时候成为标签.
+# excerpt
+excerpt_separator: "\n\n\n\n"
 
-# Gems
-# from PR#40, to support local preview for Jekyll 3.0
-# please use-> "bundle install"
-
-plugins: [jekyll-paginate]
+# paginate
+gems: [jekyll-paginate]
+paginate: 6
