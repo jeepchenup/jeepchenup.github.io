@@ -1,0 +1,38 @@
+---
+layout : post
+title : "细说 slf4j 与 log4j"
+categories : Java
+tags : Log4J SLF4J
+author : ABei
+---
+
+* content
+{:toc}
+
+## 我们聊聊 Log4j
+
+Log4j 是众多日志框架之一，在后台的开发当中我们通过日志来查找异常原因以及记录系统运行情况。Log4j 的配置也非常简单，但是你了解它内部的原理实现吗？ 本文将带大家看看 Log4j 内部是如何运作的，以及是如何读取配置文件的。
+
+
+
+
+常用的日志框架有：
+
+-   Apache Log4j 是一个基于 Java 的日志记录工具。它是由 Ceki Gülcü 首创的，现在则是 Apache 软件基金会的一个项目。 Log4j 是几种 Java 日志框架之一。
+
+-   Apache Log4j 2 是 apache 开发的一款 Log4j 的升级产品。
+
+-   Commons Logging Apache 基金会所属的项目，是一套 Java 日志接口，之前叫 Jakarta Commons Logging，后更名为 Commons Logging。
+
+-   SLF4J 类似于 Commons Logging，是一套简易 Java 日志门面，本身并无日志的实现。（Simple Logging Facade for Java，缩写SLF4J）。
+
+-   Logback 一套日志组件的实现(SLF4J阵营)。
+
+-   Jul (Java Util Logging),自 Java1.4 以来的官方日志实现。
+
+![](https://www.slf4j.org/images/concrete-bindings.png)
+
+## 参考
+
+-   [SLF4J user manual](https://www.slf4j.org/manual.html)
+-   [Java常用日志框架介绍](https://www.cnblogs.com/chenhongliang/p/5312517.html)
