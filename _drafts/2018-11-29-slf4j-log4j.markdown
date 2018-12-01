@@ -11,12 +11,12 @@ author : ABei
 
 ## 我们聊聊 Log4j
 
-Log4j 是众多日志框架之一，在后台的开发当中我们通过日志来查找异常原因以及记录系统运行情况。Log4j 的配置也非常简单，但是你了解它内部的原理实现吗？ 本文将带大家看看 Log4j 内部是如何运作的，以及是如何读取配置文件的。
+Log4j 是众多日志框架之一，在后台的开发当中我们通过日志来查找异常原因以及记录系统运行情况。Log4j 的配置也非常简单，但是你了解它内部的原理实现吗？ 本文就来看看 Log4j 内部是如何运作的，以及是如何读取配置文件的。
 
 
 
 
-常用的日志框架有：
+### 常用的日志框架
 
 -   Apache Log4j 是一个基于 Java 的日志记录工具。它是由 Ceki Gülcü 首创的，现在则是 Apache 软件基金会的一个项目。 Log4j 是几种 Java 日志框架之一。
 
@@ -29,6 +29,133 @@ Log4j 是众多日志框架之一，在后台的开发当中我们通过日志�
 -   Logback 一套日志组件的实现(SLF4J阵营)。
 
 -   Jul (Java Util Logging),自 Java1.4 以来的官方日志实现。
+
+
+### 使用 Log4j
+
+先来看看 Log4j 怎么使用的？
+
+前提准备工作：
+
+1.  加载 Log4j 的 jar 包到 classpath，这里通过 maven 来加载。
+
+    pom.xml 配置如下：
+
+    ```xml
+    <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>1.2.17</version>
+    </dependency>
+    ```
+
+1.  配置 log4j.properties 或 log4j.xml 文件。这里就用最常用的 log4j.properties 文件来配置
+
+    ```bash
+    log4j.rootLogger=INFO, stdout
+    log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+    log4j.appender.stdout.Target=System.out
+    log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+    log4j.appender.stdout.layout.ConversionPattern=%d{ABSOLUTE} %5p %c{1}:%L - %m%n
+    ```
+
+测试代码：
+
+```java
+// 省略 import 文件
+public class Log4jInAction {
+    private static final Logger LOGGER = Logger.getLogger(Log4jInAction.class);
+
+    public static void main(String[] args) {
+        String message = "Hello Log4j";
+
+        LOGGER.info("This is a test message : " + message);
+    }
+}
+```
+
+引入 Log4j 的 jar 包，编写 log4j.properties 文件以及在需要添加类日志的类中获取 Logger 实例对象，最后在需要日志的方法中编写相应的日志信息。通过这 4 个步骤就能将 Log4j 应用到你的系统中了。
+
+那么，为什么我们只需要配置 log4j.properties 文件就可以使用 Log4j 了呢？
+
+### Log4j 运行原理
+
+测试代码中，通过 `Logger.getLogger(Log4jInAction.class)` 获取了 Logger 实例对象。下面，我们来看看其内部实现。
+
+```java
+static public Logger getLogger(Class clazz) {
+    return LogManager.getLogger(clazz.getName());
+}
+```
+
+`org.apache.log4j.LogManager` 这个类才是真正负责生成 Logger 对象的。
+
+在看 `LoggerManager.getLogger(String)` 方法之前，先来看一下，在 LoggerManager 加载的时候运行的静态块。
+
+```java
+static {
+    // By default we use a DefaultRepositorySelector which always returns 'h'.
+    Hierarchy h = new Hierarchy(new RootLogger((Level) Level.DEBUG));
+    repositorySelector = new DefaultRepositorySelector(h);
+
+    /** Search for the properties file log4j.properties in the CLASSPATH.  */
+    String override =OptionConverter.getSystemProperty(DEFAULT_INIT_OVERRIDE_KEY, null);
+
+    // if there is no default init override, then get the resource
+    // specified by the user or the default config file.
+    if(override == null || "false".equalsIgnoreCase(override)) {
+            
+        String configurationOptionStr = OptionConverter.getSystemProperty(DEFAULT_CONFIGURATION_KEY, null);
+
+        String configuratorClassName = OptionConverter.getSystemProperty(CONFIGURATOR_CLASS_KEY, null);
+
+        URL url = null;
+
+        // if the user has not specified the log4j.configuration
+        // property, we search first for the file "log4j.xml" and then
+        // "log4j.properties"
+        if(configurationOptionStr == null) {	
+            url = Loader.getResource(DEFAULT_XML_CONFIGURATION_FILE);
+            if(url == null) {
+                url = Loader.getResource(DEFAULT_CONFIGURATION_FILE);
+            }
+        } else {
+            try {
+                url = new URL(configurationOptionStr);
+            } catch (MalformedURLException ex) {
+            // so, resource is not a URL:
+            // attempt to get the resource from the class path
+            url = Loader.getResource(configurationOptionStr); 
+	        }	
+        }
+      
+        // If we have a non-null url, then delegate the rest of the
+        // configuration to the OptionConverter.selectAndConfigure
+        // method.
+        if(url != null) {
+            LogLog.debug("Using URL ["+url+"] for automatic log4j configuration.");
+            try {
+                OptionConverter.selectAndConfigure(url, configuratorClassName, 
+                    LogManager.getLoggerRepository());
+            } catch (NoClassDefFoundError e) {
+                LogLog.warn("Error during default initialization", e);
+            }
+        } else {
+            LogLog.debug("Could not find resource: ["+configurationOptionStr+"].");
+        }
+    } else {
+        LogLog.debug("Default initialization of overridden by " + 
+            DEFAULT_INIT_OVERRIDE_KEY + "property."); 
+    }  
+} 
+```
+
+```java
+public static Logger getLogger(final String name) {
+    // Delegate the actual manufacturing of the logger to the logger repository.
+    return getLoggerRepository().getLogger(name);
+}
+```
 
 ![](https://www.slf4j.org/images/concrete-bindings.png)
 
