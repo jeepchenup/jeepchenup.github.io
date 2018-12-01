@@ -9,7 +9,7 @@ author : ABei
 * content
 {:toc}
 
-## 我们聊聊 Log4j
+## Log4j
 
 Log4j 是众多日志框架之一，在后台的开发当中我们通过日志来查找异常原因以及记录系统运行情况。Log4j 的配置也非常简单，但是你了解它内部的原理实现吗？ 本文就来看看 Log4j 内部是如何运作的，以及是如何读取配置文件的。
 
@@ -62,7 +62,7 @@ Log4j 是众多日志框架之一，在后台的开发当中我们通过日志�
 测试代码：
 
 ```java
-// 省略 import 文件
+import org.apache.log4j.Logger;
 public class Log4jInAction {
     private static final Logger LOGGER = Logger.getLogger(Log4jInAction.class);
 
@@ -84,57 +84,50 @@ public class Log4jInAction {
 
 ```java
 static public Logger getLogger(Class clazz) {
+    // 根据类的全限定名来生成一个 Logger 对象
     return LogManager.getLogger(clazz.getName());
 }
 ```
 
 `org.apache.log4j.LogManager` 这个类才是真正负责生成 Logger 对象的。
 
-在看 `LoggerManager.getLogger(String)` 方法之前，先来看一下，在 LoggerManager 加载的时候运行的静态块。
+在看 `LogManager.getLogger(String)` 方法之前，先来看一下，在 JVM 加载 LogManager 的时候执行的静态块。
 
 ```java
 static {
-    // By default we use a DefaultRepositorySelector which always returns 'h'.
+    // 初始 Hierarchy 对象，级别为 DEBUG
     Hierarchy h = new Hierarchy(new RootLogger((Level) Level.DEBUG));
+    // 初始化 repositorySelector
     repositorySelector = new DefaultRepositorySelector(h);
-
-    /** Search for the properties file log4j.properties in the CLASSPATH.  */
-    String override =OptionConverter.getSystemProperty(DEFAULT_INIT_OVERRIDE_KEY, null);
-
-    // if there is no default init override, then get the resource
-    // specified by the user or the default config file.
+    /* DEFAULT_INIT_OVERRIDE_KEY = "log4j.defaultInitOverride"*/
+    // 检查是否要自定义初始化 Logger 流程
+    String override = OptionConverter.getSystemProperty(DEFAULT_INIT_OVERRIDE_KEY, null);
     if(override == null || "false".equalsIgnoreCase(override)) {
-            
+        // 查找自定义 log4j 的配置文件名
         String configurationOptionStr = OptionConverter.getSystemProperty(DEFAULT_CONFIGURATION_KEY, null);
-
+        // 检查是否指定了自定义的配置类
         String configuratorClassName = OptionConverter.getSystemProperty(CONFIGURATOR_CLASS_KEY, null);
-
         URL url = null;
-
-        // if the user has not specified the log4j.configuration
-        // property, we search first for the file "log4j.xml" and then
-        // "log4j.properties"
-        if(configurationOptionStr == null) {	
+        if(configurationOptionStr == null) {// 如果都没有，那么将进行默认的初始化
+            // 在 CLASSPATH 下搜索 log4j.xml 文件的路径	
             url = Loader.getResource(DEFAULT_XML_CONFIGURATION_FILE);
             if(url == null) {
+                // 在 CLASSPATH 下搜索 log4j.properties 文件的路径
                 url = Loader.getResource(DEFAULT_CONFIGURATION_FILE);
             }
         } else {
             try {
+                // 获取自己指定配置文件的路径
                 url = new URL(configurationOptionStr);
             } catch (MalformedURLException ex) {
-            // so, resource is not a URL:
-            // attempt to get the resource from the class path
-            url = Loader.getResource(configurationOptionStr); 
-	        }	
+                url = Loader.getResource(configurationOptionStr);
+            }
         }
       
-        // If we have a non-null url, then delegate the rest of the
-        // configuration to the OptionConverter.selectAndConfigure
-        // method.
         if(url != null) {
             LogLog.debug("Using URL ["+url+"] for automatic log4j configuration.");
             try {
+                // 重点重点，下面会介绍
                 OptionConverter.selectAndConfigure(url, configuratorClassName, 
                     LogManager.getLoggerRepository());
             } catch (NoClassDefFoundError e) {
@@ -150,6 +143,122 @@ static {
 } 
 ```
 
+在上面的静态块中，LogManager 在 CLASSPATH 下面检查一些 `key` 来确定用户是否要自定义 Log4j 的初始化流程。如果没有自定义，就启用默认的配置文件 —— `log4j.xml` 或 `log4j.properties`。
+除此之外，还初始化了 `Hierarchy` 对象。Hierarchy 是 LogManager 中默认对 `LoggerRepository` 的实现。
+![Hierarchy.png](https://i.loli.net/2018/12/01/5c02383be6b13.png)
+
+接着再确定好配置文件的路径之后，开始执行初始化配置的工作.
+
+`OptionConverter.selectAndConfigure(URL url, String clazz, LoggerRepository hierarchy)`：
+
+```java
+public static void selectAndConfigure(URL url, String clazz, LoggerRepository hierarchy) {
+    Configurator configurator = null;
+    String filename = url.getFile();
+    // log4j.xml
+    if(clazz == null && filename != null && filename.endsWith(".xml")) {
+        clazz = "org.apache.log4j.xml.DOMConfigurator";
+    }
+    // 自定义配置类
+    // 需要注意的是，自定义的配置类必须要实现 Configurator 接口
+    if(clazz != null) {
+        LogLog.debug("Preferred configurator class: " + clazz);
+        configurator = (Configurator) instantiateByClassName(clazz,
+                                Configurator.class,
+                                null);
+        if(configurator == null) {
+            LogLog.error("Could not instantiate configurator ["+clazz+"].");
+            return;
+        }
+    } else {
+        // log4.properties
+        configurator = new PropertyConfigurator();
+    }
+    // 在确定使用哪种配置类之后，开始配置工作
+    configurator.doConfigure(url, hierarchy);
+}
+```
+
+`doConfigure(URL url, LoggerRepository repository)`：
+
+本文使用 `log4j.properties` 来做配置文件，下面就来看 `PropertyConfigurator` 中的 doConfigure 方法。
+
+```java
+public void doConfigure(java.net.URL configURL, LoggerRepository hierarchy) {
+    Properties props = new Properties();
+    LogLog.debug("Reading configuration from URL " + configURL);
+    InputStream istream = null;
+    URLConnection uConn = null;
+    try {
+      uConn = configURL.openConnection();
+      uConn.setUseCaches(false);
+      istream = uConn.getInputStream();
+      props.load(istream);
+    }
+    catch (Exception e) {
+      ... ...
+      // 避免篇幅过长，省略一些代码
+      ... ...
+    }
+    finally {
+        ... ...
+        // 关闭资源
+        ... ...
+    }
+    // 将 log4j.properties 配置文件转换成 java.util.Properties 对象
+    doConfigure(props, hierarchy);
+}
+```
+
+`doConfigure(Properties, LoggerRepository)`
+
+```java
+public void doConfigure(Properties properties, LoggerRepository hierarchy) {
+    repository = hierarchy;
+    /* LogLog.DEBUG_KEY = "log4j.debug"*/
+    // 可以通过在 log4j.properties 中设置 log4j.debug 的值或者 log4j.configDebug 的值
+    // 来控制 LogLog 的日志级别
+    // LogLog 在我看来就是给 Log4j 自己用的内部日志
+    String value = properties.getProperty(LogLog.DEBUG_KEY);
+    if(value == null) {
+        value = properties.getProperty("log4j.configDebug");
+        if(value != null)
+            LogLog.warn("[log4j.configDebug] is deprecated. Use [log4j.debug] instead.");
+    }
+
+    if(value != null) {
+        LogLog.setInternalDebugging(OptionConverter.toBoolean(value, true));
+    }
+
+    //  if log4j.reset=true then reset hierarchy
+    String reset = properties.getProperty(RESET_KEY);
+    if (reset != null && OptionConverter.toBoolean(reset, false)) {
+        hierarchy.resetConfiguration();
+    }
+
+    String thresholdStr = OptionConverter.findAndSubst(THRESHOLD_PREFIX, properties);
+    if(thresholdStr != null) {
+        hierarchy.setThreshold(OptionConverter.toLevel(thresholdStr,
+                                (Level) Level.ALL));
+        LogLog.debug("Hierarchy threshold set to ["+hierarchy.getThreshold()+"].");
+    }
+
+    // 这里就开始根据 properties 对 Logger 对象进行一些配置，有兴趣可以深入下面 3 个方法
+    configureRootCategory(properties, hierarchy);
+    configureLoggerFactory(properties);
+    parseCatsAndRenderers(properties, hierarchy);
+
+    LogLog.debug("Finished configuring.");
+    // We don't want to hold references to appenders preventing their
+    // garbage collection.
+    registry.clear();
+}
+```
+
+第一次加载 Logger 对象需要设置一些参数，我们上面基本已经都介绍到了。下面，回到主线上来。
+
+`LogManager.getLogger(String)`
+
 ```java
 public static Logger getLogger(final String name) {
     // Delegate the actual manufacturing of the logger to the logger repository.
@@ -157,7 +266,123 @@ public static Logger getLogger(final String name) {
 }
 ```
 
-![](https://www.slf4j.org/images/concrete-bindings.png)
+这里 `getLoggerRepository()` 方法返回的就是静态块中初始化的 `Hierarchy` 对象。
+
+`Hierarchy.getLogger(String)`：
+
+```java
+public Logger getLogger(String name) {
+    return getLogger(name, defaultFactory);
+}
+
+public Logger getLogger(String name, LoggerFactory factory) {
+    CategoryKey key = new CategoryKey(name);
+    // Synchronize to prevent write conflicts. Read conflicts (in
+    // getChainedLevel method) are possible only if variable
+    // assignments are non-atomic.
+    Logger logger;
+
+    synchronized(ht) {
+        Object o = ht.get(key);
+        if(o == null) {// 该类的全限定名还没有注册到 LoggerFactory 中
+            // 生成新的 Logger 对象
+            logger = factory.makeNewLoggerInstance(name);
+            // 设置层级
+            logger.setHierarchy(this);
+            // 添加到 HashTable 中，你可以理解为注册表
+            ht.put(key, logger);
+            updateParents(logger);
+            return logger;
+        } else if(o instanceof Logger) {// 已经注册过
+            return (Logger) o;
+        } else if (o instanceof ProvisionNode) {
+            //System.out.println("("+name+") ht.get(this) returned ProvisionNode");
+            logger = factory.makeNewLoggerInstance(name);
+            logger.setHierarchy(this);
+            ht.put(key, logger);
+            updateChildren((ProvisionNode) o, logger);
+            updateParents(logger);
+            return logger;
+        } else {
+            // It should be impossible to arrive here
+            return null;  // but let's keep the compiler happy.
+        }
+    }
+  }
+```
+
+至此，对 Log4j 是如何读取配置文件，Logger 对象是如何生成的有了一个大概的了解了。
+
+## SLF4J
+
+前面在介绍几种日志框架的时候提到过 SLF4J。SLF4J 本身没有日志的功能，但是它能够绑定一种日志框架，用这个被绑定的日志框架来实现它的日志功能。
+
+### 使用 SLF4J
+
+这里我们用 Log4j 当做 SLF4J 的具体实现方案。
+
+`pom.xml`：
+
+```xml
+<dependency>
+    <groupId>log4j</groupId>
+    <artifactId>log4j</artifactId>
+    <version>1.2.17</version>
+</dependency>
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
+    <version>1.7.25</version>
+</dependency>
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-log4j12</artifactId>
+    <version>1.7.25</version>
+</dependency>
+```
+
+`log.properties` 如上
+
+测试代码：
+
+```java
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class SLF4JInAction {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SLF4JInAction.class);
+
+    public static void main(String[] args ) {
+        String message = "Hello SLF4J";
+        LOGGER.info("This is a test message : {}", message);
+    }
+}
+```
+
+SLF4J 与 Log4j 使用上也是有一些不同，虽然实际上用的是 Log4j，但打印日志的方式也有一些不同。比如，SLF4J 打印信息可以使用占位符。
+
+### SLF4J 运行原理
+
+我们就从 `LoggerFactory.getLogger(Class)` 作为入口来看看 SLF4J 内部是如何操作的。
+
+```java
+public static Logger getLogger(Class<?> clazz) {
+    Logger logger = getLogger(clazz.getName());
+    if (DETECT_LOGGER_NAME_MISMATCH) {
+        Class<?> autoComputedCallingClass = Util.getCallingClass();
+        if (autoComputedCallingClass != null && nonMatchingClasses(clazz, autoComputedCallingClass)) {
+            Util.report(String.format("Detected logger name mismatch. Given name: \"%s\"; computed name: \"%s\".", logger.getName(),
+                            autoComputedCallingClass.getName()));
+            Util.report("See " + LOGGER_NAME_MISMATCH_URL + " for an explanation");
+        }
+    }
+    return logger;
+}
+
+// 
+```
+
+### 为什么要选 SLF4J 而不是直接选用 Log4j
 
 ## 参考
 
