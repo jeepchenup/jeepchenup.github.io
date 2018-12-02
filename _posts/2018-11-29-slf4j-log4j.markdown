@@ -363,7 +363,7 @@ SLF4J 与 Log4j 使用上也是有一些不同，虽然实际上用的是 Log4j�
 
 ### SLF4J 运行原理
 
-我们就从 `LoggerFactory.getLogger(Class)` 作为入口来看看 SLF4J 内部是如何操作的。
+我们就从 `LoggerFactory.getLogger(Class)` 作为入口来观察 SLF4J 内部是如何操作的。
 
 ```java
 public static Logger getLogger(Class<?> clazz) {
@@ -379,10 +379,84 @@ public static Logger getLogger(Class<?> clazz) {
     return logger;
 }
 
-// 
+// getLogger(Class) 内部调用了 getLogger(String)
+public static Logger getLogger(String name) {
+    ILoggerFactory iLoggerFactory = getILoggerFactory();
+    return iLoggerFactory.getLogger(name);
+}
 ```
 
+从上面的代码可以看出，`getLogger(Class)` 最终通过 `ILoggerFactory` 来获取 Logger 实例对象。
+通过 `getILoggerFactory()` 方法来获取 `ILoggerFactory` 对象。
+
+```java
+public static ILoggerFactory getILoggerFactory() {
+    if (INITIALIZATION_STATE == UNINITIALIZED) {// 如果未进行初始化，就先初始化工作
+        synchronized (LoggerFactory.class) {
+            if (INITIALIZATION_STATE == UNINITIALIZED) {
+                INITIALIZATION_STATE = ONGOING_INITIALIZATION;
+                // 执行初始化（有兴趣可以继续深入看）
+                performInitialization();
+            }
+        }
+    }
+    switch (INITIALIZATION_STATE) {
+    case SUCCESSFUL_INITIALIZATION:
+        // 成功初始化之后，通过 StaticLoggerBinder 来获取 getILoggerFactory 对象
+        return StaticLoggerBinder.getSingleton().getLoggerFactory();
+    case NOP_FALLBACK_INITIALIZATION:
+        return NOP_FALLBACK_FACTORY;
+    case FAILED_INITIALIZATION:
+        throw new IllegalStateException(UNSUCCESSFUL_INIT_MSG);
+    case ONGOING_INITIALIZATION:
+        return SUBST_FACTORY;
+    }
+    throw new IllegalStateException("Unreachable code");
+}
+```
+
+来简单看一下 `StaticLoggerBinder` 内部构造：
+
+```java
+public class StaticLoggerBinder implements LoggerFactoryBinder {
+
+    private static final StaticLoggerBinder SINGLETON = new StaticLoggerBinder();
+    public static final StaticLoggerBinder getSingleton() {
+        return SINGLETON;
+    }
+    public static String REQUESTED_API_VERSION = "1.6.99"; // !final
+    private static final String loggerFactoryClassStr = Log4jLoggerFactory.class.getName();
+
+    private final ILoggerFactory loggerFactory;
+
+    private StaticLoggerBinder() {
+        loggerFactory = new Log4jLoggerFactory();
+        try {
+            @SuppressWarnings("unused")
+            Level level = Level.TRACE;
+        } catch (NoSuchFieldError nsfe) {
+            Util.report("This version of SLF4J requires log4j version 1.2.12 or later. See also http://www.slf4j.org/codes.html#log4j_version");
+        }
+    }
+
+    public ILoggerFactory getLoggerFactory() {
+        return loggerFactory;
+    }
+
+    public String getLoggerFactoryClassStr() {
+        return loggerFactoryClassStr;
+    }
+}
+```
+
+原来 StaticLoggerBinder 中初始化的是 `Log4jLoggerFactory`。细枝末节的东西就不再深入，有兴趣可以自己看，结合上面对 `Log4j` 的实现原理应该很快就能理解。
+
 ### 为什么要选 SLF4J 而不是直接选用 Log4j
+
+1.  在你的开源或内部类库中使用 SLF4J 会使得它独立于任何一个特定的日志实现，这意味着不需要管理多个日志配置或者多个日志类库，你的客户端会很感激这点。
+1.  SLF4J 提供了基于占位符的日志方法，这通过去除检查 isDebugEnabled()，isInfoEnabled()等等，提高了代码可读性。
+1.  通过使用 SLF4J 的日志方法，你可以延迟构建日志信息（Srting）的开销，直到你真正需要，这对于内存和 CPU 都是高效的。
+1.  作为附注，更少的暂时的字符串意味着垃圾回收器（Garbage Collector）需要做更好的工作，这意味着你的应用程序有为更好的吞吐量和性能。
 
 ## 参考
 
