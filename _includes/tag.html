@@ -10,7 +10,13 @@
     {% endfor %}
   {% endif %}
 {% endcapture %}
-<!-- <span class="point">•</span> -->
-<span class="pageTag">
-  <i class="fa fa-tags"></i>{{ tags }}
-</span>
+
+{% if page.tags.size>0 %}
+  <span class="pageTag">
+    <i class="fa fa-tags"></i>{{ tags }}
+  </span>
+{% elsif tags.size>16 %}
+  <span class="pageTag">
+    <i class="fa fa-tags"></i>{{ tags }}
+  </span>
+{% endif %}
