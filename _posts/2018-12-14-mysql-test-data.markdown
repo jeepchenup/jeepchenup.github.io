@@ -53,4 +53,4 @@ source F:\employees_db-full-1.0.6\employees_db\employees.sql
 
 表关系图如下：
 
-![](http://pjpu31ps6.bkt.clouddn.com/emloyees.png "employees_data_model")
+![](http://cdn.51leif.com/emloyees.png "employees_data_model")
