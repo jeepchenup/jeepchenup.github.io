@@ -1,7 +1,8 @@
 ---
 layout : post
 title : "Mysql 测试数据"
-categories : MySQL
+categories : Database
+tags: MySQL
 author : ABei
 ---
 

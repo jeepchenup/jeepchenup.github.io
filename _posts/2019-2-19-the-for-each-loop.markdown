@@ -1,8 +1,9 @@
 ---
-layout : post
-title : "谈谈 foreach 内部实现"
-categories : Java
-author : ABei
+layout: post
+title: "谈谈 foreach 内部实现"
+categories: Java
+tags: Collection
+author: ABei
 ---
 
 * content

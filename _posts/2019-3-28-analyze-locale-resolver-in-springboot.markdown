@@ -2,7 +2,8 @@
 layout: post
 title: "浅析 LocaleResolver 在 SpringBoot 的执行流程"
 author: ABei
-categories : SpringBoot Thymeleaf Logback
+categories: Framework
+tags: SpringBoot Logback
 ---
 * content
 {:toc}

@@ -1,8 +1,9 @@
 ---
 layout: post
 title: "在 Windows 中连接 Ubuntu 内 Redis"
-categories : Redis
-author : ABei
+categories: Database
+tags: Redis
+author: ABei
 ---
 
 由于在 Ubuntu 中部署 Redis，想要在 Windows 中用 Java 代码连接测试。

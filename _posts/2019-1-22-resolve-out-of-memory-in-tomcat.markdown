@@ -1,7 +1,8 @@
 ---
 layout : post
 title : "解决：Tomcat 热部署时抛出 OutOfMemoryError"
-categories : Tomcat
+categories: Server
+tags: Tomcat
 author : ABei
 ---
 * content
