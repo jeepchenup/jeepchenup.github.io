@@ -1,0 +1,79 @@
+---
+layout: post
+title: "排查：CPU 爆满情况"
+author: ABei
+categories : Java Linux
+tags: CPU
+---
+* content
+{:toc}
+
+> 有三个重要的命令需要注意：
+1.  `top`
+1.  `ps`
+1.  `jstack`
+
+
+
+
+
+这里我将用一个简单的测试类 `CustomEndlessLoop` 来制造 CPU 爆满的情况。
+
+```java
+public class CustomEndlessLoop {
+	public static void main(String[] args) {
+		int i = 0;
+		while(true) {
+			i =+ 1;
+		}
+	}
+}
+```
+
+运行测试代码：
+
+![](http://cdn.51leif.com/2019-4-16-post-cpu-100.png)
+
+## 1. top 命令
+
+我们可以通过 `top` 命令查看现在系统 CPU 占用情况：
+
+![](http://cdn.51leif.com/2019-4-16-post-cpu-100-1.png)
+
+可以看到，此时 CPU 爆满确实是因为 Java 进程造成的。但是具体是 Java 中的那个线程造成的，还需要继续排查。
+
+## 2. ps 命令
+
+在上面 `top` 命令中，我们知道是 **9057** 这个进程中出现了问题。下面，我们要通过 `ps` 命令来排查是哪些线程造成的。
+
+通过 `ps -mp 9057 -o THREAD,tid,time` 可以罗列出 9057 中，具体是那些线程造成的。
+
+![](http://cdn.51leif.com/2019-4-16-post-cpu-100-2.png)
+
+从上图，我们已经找到了具体的问题线程是 —— `TID: 9058` 的线程。
+
+为了方便后面的 `jstack` 命令查找线程 `TID` 方便，我们这里将 `9058` 转成 **16** 进制。
+
+![](http://cdn.51leif.com/2019-4-16-post-cpu-100-3.png)
+
+## 3. jstack 命令
+
+`jstack` 是 JDK 自带的命令，专门就是来查看 java 进程中的线程信息的。
+
+可以通过 `jstack 9057 | grep 2362`，查看 `9057` 中 `2362` 线程的具体信息。
+
+![](http://cdn.51leif.com/2019-4-16-post-cpu-100-4.png)
+
+这个线程正在运行状态。通过 `jstack 9057` 可以查看具体信息。
+
+![](http://cdn.51leif.com/2019-4-16-post-cpu-100-5.png)
+
+可以看到，除了后台线程和 VM 线程在运行，就只有 `main` 线程在运行。正在运行的代码也是指向了 `CustomEndlessLoop` 类。
+
+## 总结
+
+排查思路如下：
+
+1.  通过 `top` 命令，查找出 Java 进程 PID。
+1.  通过 `ps -mp [PID] -o THREAD,tid,time`，查找出问题线程的 TID。
+1.  通过 `jstack [TID]` 命令，查找出具体问题 Java 类。
