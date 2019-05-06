@@ -5,6 +5,8 @@ author: ABei
 categories : Linux MQ
 tags: Ubuntu RabbitMQ
 ---
+* content
+{:toc}
 
 > Ubuntu 版本：16.04 LTS；RabbitMQ 版本：3.7.14
 
@@ -78,4 +80,39 @@ sudo apt-get install -y rabbitmq-server
 sudo rabbitmq-plugins enable rabbitmq_management
 ```
 
-访问端口号是：15672
+访问管理界面地址：`http://localhost:15672`。
+
+> 账号: guest；密码：guest
+
+可以看到下面的界面说明你已经成功的安装了 RabbitMQ。恭喜啊！！！！大兄弟。
+
+![](http://cdn.51leif.com/2019-05-06_215140.png)
+
+## 远程 IP 访问
+
+你以为这样就结束了？当然不会啦！如果，我想要在其他机子上访问当前 Ubuntu 上面的 RabbitMQ 管理界面，那要怎么办呢？
+
+聪明的你，可能已经想到了。
+
+```shell
+# 获取本机 ip 地址
+ifconfig -a
+```
+
+![](http://cdn.51leif.com/2019-05-06_222224.png)
+
+怎么会访问不了呢？经过一番查阅资料之后，发现在 RabbitMQ 从 `3.3.0` 开始禁止使用 `guest/guest` 权限通过除 **localhost** 外的 IP 访问。
+
+如果想要开启远程 IP 访问，就需要手动修改配置文件 `rabbit.app` 文件。
+
+```shell
+# 查找 rabbit.app 文件
+locate rabbit.app
+```
+
+将文件中的 `{loopback_users, [<<”guest”>>]}，` 改为 `{loopback_users, []}，`
+
+```shell
+# 最后重启 RabbitMQ SERVER 就能开启远程 IP 访问了
+systemctl restart rabbitmq-server.service
+```
