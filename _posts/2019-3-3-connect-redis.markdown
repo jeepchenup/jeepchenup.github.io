@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "在 Windows 中连接 Ubuntu 内 Redis"
-categories: Database
+categories: Java
 tags: Redis
 author: ABei
 ---

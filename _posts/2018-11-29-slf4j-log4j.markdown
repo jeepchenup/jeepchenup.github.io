@@ -1,7 +1,7 @@
 ---
 layout : post
 title : "细说 slf4j 与 log4j"
-categories : Framework
+categories : Log
 tags : Log4J SLF4J
 author : ABei
 ---

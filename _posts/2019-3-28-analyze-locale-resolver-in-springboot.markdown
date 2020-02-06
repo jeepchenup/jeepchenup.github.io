@@ -2,7 +2,7 @@
 layout: post
 title: "浅析 LocaleResolver 在 SpringBoot 的执行流程"
 author: ABei
-categories: Framework
+categories: Java
 tags: SpringBoot Logback
 ---
 * content

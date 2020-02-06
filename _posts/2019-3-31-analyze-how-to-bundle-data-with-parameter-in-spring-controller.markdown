@@ -2,7 +2,7 @@
 layout: post
 title: "解析 Spring Controller 映射方法参数的映射过程"
 author: ABei
-categories : Framework
+categories : Java
 tags: SpringMVC
 ---
 * content

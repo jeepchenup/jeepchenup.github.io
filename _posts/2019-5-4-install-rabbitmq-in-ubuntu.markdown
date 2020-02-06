@@ -2,8 +2,8 @@
 layout: post
 title: "在 Ubuntu 中安装 RabbitMQ"
 author: ABei
-categories : Linux MQ
-tags: Ubuntu RabbitMQ
+categories : Java
+tags: Ubuntu Linux RabbitMQ
 ---
 * content
 {:toc}

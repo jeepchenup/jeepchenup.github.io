@@ -2,8 +2,8 @@
 layout: post
 title: "排查：CPU 爆满情况"
 author: ABei
-categories : Java Linux
-tags: CPU
+categories : Java
+tags: JVM CPU
 ---
 * content
 {:toc}

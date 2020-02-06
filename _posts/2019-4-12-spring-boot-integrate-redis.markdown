@@ -2,7 +2,7 @@
 layout: post
 title: "记录踩坑 - Spring Boot 2.0 整合 Redis 出现序列化"
 author: ABei
-categories : Framework Database
+categories : Java
 tags: SpringBoot Redis
 ---
 * content

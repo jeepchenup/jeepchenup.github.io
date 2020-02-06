@@ -2,8 +2,8 @@
 layout: post
 title: "执行jmap执行异常"
 author: ABei
-categories : Windows JVM
-tags: commonds
+categories : Java
+tags: JVM Commands
 ---
 * content
 {:toc}

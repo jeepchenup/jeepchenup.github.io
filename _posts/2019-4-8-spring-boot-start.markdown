@@ -2,7 +2,7 @@
 layout: post
 title: "分析 Spring Boot 启动过程"
 author: ABei
-categories : Framework
+categories : Java
 tags: SpringBoot
 ---
 * content
